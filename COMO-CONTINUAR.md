@@ -7,7 +7,7 @@ Este arquivo explica onde o PIT II parou e o que falta fazer, para continuar em 
 | O quê | Onde |
 |---|---|
 | Código e documentação | este repositório: https://github.com/pedrobortolanza/pit2-loja-cupcakes-pedro |
-| Site no ar | LINK_DA_VERCEL |
+| Site no ar | https://pit2-loja-cupcakes.vercel.app |
 | Painel da Vercel | vercel.com → time **ARKAN** → projeto **pit2-loja-cupcakes** |
 | Banco de dados | supabase.com → organização **arkanpagesGEP** → projeto **loja-cupcakes** |
 | Documento de entrega (docx) | [`entrega/PIT_atividade_preenchido.docx`](entrega/PIT_atividade_preenchido.docx) |
@@ -98,11 +98,11 @@ Se um colega não apontar nada, registre no laudo que não houve falha naquele t
 
 > Oi! Estou fazendo o Projeto Integrador e preciso que você teste meu sistema, uma loja virtual de cupcakes. Leva uns 10 minutos.
 >
-> 1. Abra: LINK_DA_VERCEL
+> 1. Abra: https://pit2-loja-cupcakes.vercel.app
 > 2. Navegue, coloque cupcakes no carrinho, crie uma conta e faça um pedido. Teste com Pix e com cartão (use o cartão de teste 4111 1111 1111 1111, validade 12/30, CVV 123; nada é cobrado). Tente também errar de propósito: endereço vazio, cartão inválido, quantidade maior que o estoque.
 > 3. Veja o pedido em "Meus pedidos" e tente cancelar.
 > 4. Se possível, teste no celular também.
-> 5. No fim, preencha a avaliação: LINK_DA_VERCEL/avaliacao/
+> 5. No fim, preencha a avaliação: https://pit2-loja-cupcakes.vercel.app/avaliacao/
 >    Se algo der errado, tire um print, suba no Google Drive com o link aberto e cole no formulário.
 >
 > Pode ser bem sincero(a), os erros me ajudam. Obrigado!

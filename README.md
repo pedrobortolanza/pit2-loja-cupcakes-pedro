@@ -4,8 +4,9 @@ Projeto Integrador Transdisciplinar em Engenharia de Software II.
 
 Sistema web para uma loja de cupcakes gourmet: vitrine virtual, carrinho, pedido, pagamento (simulado) e acompanhamento da entrega, com painel para o lojista.
 
-- **Sistema no ar:** LINK_DA_VERCEL
-- **Vídeo de demonstração:** LINK_DO_VIDEO
+- **Antes de tudo, leia [COMO-CONTINUAR.md](COMO-CONTINUAR.md).**
+- **Sistema no ar:** https://pit2-loja-cupcakes.vercel.app
+- **Vídeo de demonstração:** (adicionar o link do YouTube depois de gravar)
 
 | | |
 |---|---|

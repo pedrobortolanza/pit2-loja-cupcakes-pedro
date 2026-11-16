@@ -18,7 +18,7 @@ Feita com 5 colegas (dublês de usuários), que usam o sistema publicado como cl
 
 ### Roteiro enviado aos testadores
 
-1. Abra o site: **LINK_DA_VERCEL**
+1. Abra o site: **https://pit2-loja-cupcakes.vercel.app**
 2. Navegue pela vitrine, busque um sabor e filtre por categoria.
 3. Abra um cupcake e adicione 2 unidades ao carrinho.
 4. Tente adicionar mais do que o estoque disponível.
@@ -30,7 +30,7 @@ Feita com 5 colegas (dublês de usuários), que usam o sistema publicado como cl
 7. Abra "Meus pedidos", veja a linha do tempo e cancele um dos pedidos.
 8. (Opcional) Entre como administrador (`admin@nuvemdeacucar.test` / `r29jUCkk9ZC4`), avance o status de um pedido e cadastre um cupcake.
 9. Teste também pelo celular.
-10. Preencha o formulário: **LINK_DA_VERCEL/avaliacao/**. Para mostrar um erro, tire um print, suba no Google Drive com o link aberto e cole no campo de evidências.
+10. Preencha o formulário: **https://pit2-loja-cupcakes.vercel.app/avaliacao/**. Para mostrar um erro, tire um print, suba no Google Drive com o link aberto e cole no campo de evidências.
 
 ### Critérios de aceitação da validação
 

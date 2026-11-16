@@ -1,6 +1,6 @@
 # Manual de uso
 
-**Endereço do sistema:** LINK_DA_VERCEL
+**Endereço do sistema:** https://pit2-loja-cupcakes.vercel.app
 
 > Ambiente de demonstração: nenhum pagamento é cobrado de verdade.
 
@@ -47,7 +47,7 @@ Você também pode criar sua própria conta em **Entrar → Cadastre-se**.
 
 ## Para os testadores
 
-Abra **LINK_DA_VERCEL/avaliacao/** (ou o link "Testou o site? Deixe sua avaliação" no rodapé) e preencha:
+Abra **https://pit2-loja-cupcakes.vercel.app/avaliacao/** (ou o link "Testou o site? Deixe sua avaliação" no rodapé) e preencha:
 - seu nome e a data do teste;
 - o que testou e funcionou;
 - o que testou e não funcionou, e o que deve ser corrigido;

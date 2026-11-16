@@ -1,6 +1,6 @@
 # Modelo de avaliação do teste
 
-O formulário fica dentro do próprio sistema, em **LINK_DA_VERCEL/avaliacao/**, e as respostas aparecem para o administrador em **Painel → Avaliações de teste**. Se preferir papel ou e-mail, copie este modelo.
+O formulário fica dentro do próprio sistema, em **https://pit2-loja-cupcakes.vercel.app/avaliacao/**, e as respostas aparecem para o administrador em **Painel → Avaliações de teste**. Se preferir papel ou e-mail, copie este modelo.
 
 ---
 
