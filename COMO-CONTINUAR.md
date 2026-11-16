@@ -26,7 +26,7 @@ Cartão de teste: `4111 1111 1111 1111`, validade `12/30`, CVV `123`.
 
 - [x] Banco PostgreSQL no Supabase com tabelas e dados iniciais
 - [x] Site completo em Python/Flask (MVC): vitrine, carrinho, login, pedido, pagamento simulado, acompanhamento, painel do lojista, formulário de avaliação
-- [x] 56 testes automatizados passando
+- [x] 62 testes automatizados passando
 - [x] Documentação das 3 situações em [`docs/`](docs/) (histórias, UML, telas, banco, dicionário de dados, arquitetura, manual, plano de testes, modelo do laudo)
 - [x] Projeto criado na Vercel e ligado a este repositório (cada `git push` publica o site)
 - [x] Docx de entrega preenchido com nome, links e dados técnicos
@@ -53,7 +53,7 @@ Roteiro sugerido (~6 min):
 2. **(1 min)** GitHub: mostre a pasta `docs` com as 3 situações, abra o UML (os diagramas aparecem desenhados) e o dicionário de dados.
 3. **(2 min)** Como cliente: vitrine, busca, filtro, detalhes, carrinho (tente passar do estoque para mostrar o erro), criar conta, finalizar com entrega + Pix, mostrar a linha do tempo. Faça também um pedido com cartão inválido para mostrar a recusa.
 4. **(1 min 30 s)** Como admin: painel de pedidos, avançar o status (volte na conta do cliente e mostre que mudou), cadastrar um cupcake novo e tirar um da vitrine.
-5. **(40 s)** Testes: no terminal, rode `.venv/bin/python -m pytest -v` e mostre os 56 aprovados. Mostre o Supabase com as tabelas.
+5. **(40 s)** Testes: no terminal, rode `.venv/bin/python -m pytest -v` e mostre os 62 aprovados. Mostre o Supabase com as tabelas.
 6. **(20 s)** Tecnologias: Python + Flask MVC, PostgreSQL no Supabase, Vercel, Pytest.
 
 Suba no YouTube como **Não listado** e cole o link no docx (campo "Link do vídeo narrado") e no `README.md`.

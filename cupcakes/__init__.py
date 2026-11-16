@@ -66,6 +66,8 @@ def create_app(configuracao=Config):
         codigo = getattr(erro, "code", 500) or 500
         if codigo == 500:
             db.session.rollback()
+            causa = getattr(erro, "original_exception", None) or erro
+            app.logger.error("CAUSA DO ERRO 500: %s: %s", type(causa).__name__, str(causa).splitlines()[0][:300] if str(causa) else "")
         titulo, mensagem = ERROS.get(codigo, ERROS[500])
         return render_template("erros/erro.html", codigo=codigo, titulo=titulo, mensagem=mensagem), codigo
 

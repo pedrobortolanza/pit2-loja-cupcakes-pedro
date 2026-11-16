@@ -1,6 +1,6 @@
 # Testes automatizados (Pytest)
 
-**Resultado da última execução:** 56 testes, 56 aprovados, 0 falhas.
+**Resultado da última execução:** 62 testes, 62 aprovados, 0 falhas.
 
 Como rodar:
 
@@ -15,6 +15,7 @@ Os testes usam um banco SQLite em memória criado do zero a cada teste, então n
 | `tests/test_modelos.py` | Models (validações de Cliente, Cupcake e AvaliacaoTeste) | 13 |
 | `tests/test_servicos.py` | Services (carrinho, frete, endereço, pagamento, pedido, cancelamento, status) | 26 |
 | `tests/test_rotas.py` | Controllers + Views (integração pelas rotas HTTP) | 17 |
+| `tests/test_config.py` | Configuração (senha do banco com caracteres especiais na DATABASE_URL) | 6 |
 
 ## O que cada grupo garante
 
@@ -76,6 +77,12 @@ Os testes usam um banco SQLite em memória criado do zero a cada teste, então n
 ## Saída da execução
 
 ```
+tests/test_config.py::test_url_do_banco_codifica_a_senha[postgresql://postgres.abc:SenhaSimples1@aws-0-sa-east-1.pooler.supabase.com:6543/postgres-SenhaSimples1] PASSED
+tests/test_config.py::test_url_do_banco_codifica_a_senha[postgresql://postgres.abc:p@ss#w/rd?@aws-0-sa-east-1.pooler.supabase.com:6543/postgres-p%40ss%23w%2Frd%3F] PASSED
+tests/test_config.py::test_url_do_banco_codifica_a_senha[postgresql://postgres.abc:[minhasenha]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres-minhasenha] PASSED
+tests/test_config.py::test_url_do_banco_codifica_a_senha[postgres://postgres.abc:ja%40codificada@aws-0-sa-east-1.pooler.supabase.com:6543/postgres-ja%40codificada] PASSED
+tests/test_config.py::test_url_do_banco_codifica_a_senha[  postgresql://postgres.abc:espaco@aws-0-sa-east-1.pooler.supabase.com:6543/postgres\n-espaco] PASSED
+tests/test_config.py::test_url_sqlite_nao_muda PASSED
 tests/test_modelos.py::test_cadastro_guarda_senha_criptografada PASSED
 tests/test_modelos.py::test_cadastro_normaliza_email PASSED
 tests/test_modelos.py::test_cadastro_recusa_email_repetido PASSED
@@ -132,5 +139,5 @@ tests/test_servicos.py::test_cliente_cancela_pedido_recebido_e_estoque_volta PAS
 tests/test_servicos.py::test_cliente_nao_cancela_pedido_em_preparo PASSED
 tests/test_servicos.py::test_fluxo_de_status_da_entrega PASSED
 tests/test_servicos.py::test_fluxo_de_status_da_retirada PASSED
-============================== 56 passed in 5.63s ==============================
+============================== 62 passed in 5.60s ==============================
 ```

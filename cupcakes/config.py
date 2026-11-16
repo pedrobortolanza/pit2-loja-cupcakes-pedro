@@ -1,14 +1,28 @@
 import os
 from decimal import Decimal
+from urllib.parse import quote, unquote
 
 from sqlalchemy.pool import NullPool
 
 
+def codificar_senha(resto):
+    if "@" not in resto:
+        return resto
+    credenciais, endereco = resto.rsplit("@", 1)
+    if ":" not in credenciais:
+        return resto
+    usuario, senha = credenciais.split(":", 1)
+    senha = senha.strip()
+    if senha.startswith("[") and senha.endswith("]"):
+        senha = senha[1:-1]
+    return f"{usuario}:{quote(unquote(senha), safe='')}@{endereco}"
+
+
 def normalizar_url_banco(url):
-    if url.startswith("postgres://"):
-        return "postgresql+psycopg://" + url[len("postgres://"):]
-    if url.startswith("postgresql://"):
-        return "postgresql+psycopg://" + url[len("postgresql://"):]
+    url = url.strip()
+    for prefixo in ("postgres://", "postgresql://", "postgresql+psycopg://"):
+        if url.startswith(prefixo):
+            return "postgresql+psycopg://" + codificar_senha(url[len(prefixo):])
     return url
 
 

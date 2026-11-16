@@ -9,7 +9,7 @@
 
 | Item | Resultado |
 |---|---|
-| Testes automatizados | 56 de 56 aprovados |
+| Testes automatizados | 62 de 62 aprovados |
 | Testadores | 5 |
 | Testadores que finalizaram um pedido sem ajuda | PREENCHER de 5 |
 | Problemas encontrados | PREENCHER |
