@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "parciais/macros.html" import csrf, cupcake_svg with context %}
+{% block titulo %}{{ cupcake.nome }}{% endblock %}
+{% block conteudo %}
+<nav class="trilha" aria-label="Você está em"><a href="{{ url_for('loja.vitrine') }}">Vitrine</a> › <a href="{{ url_for('loja.vitrine', categoria=cupcake.categoria_id) }}">{{ cupcake.categoria.nome }}</a> › <span>{{ cupcake.nome }}</span></nav>
+<article class="produto">
+  <div class="produto-imagem" style="--fundo: {{ cupcake.cor }}">{{ cupcake_svg(cupcake.cor) }}</div>
+  <div class="produto-info">
+    <p class="cartao-categoria">{{ cupcake.categoria.nome }}</p>
+    <h1>{{ cupcake.nome }}</h1>
+    <p>{{ cupcake.descricao }}</p>
+    <p class="preco preco-grande">{{ cupcake.preco|moeda }} <span class="texto-suave texto-pequeno">a unidade</span></p>
+    {% if cupcake.disponivel %}
+      <p class="texto-suave">{{ cupcake.estoque }} unidade(s) disponível(is) hoje.</p>
+      <form class="comprar" method="post" action="{{ url_for('carrinho.adicionar', cupcake_id=cupcake.id) }}">
+        {{ csrf() }}
+        <input type="hidden" name="voltar" value="{{ url_for('carrinho.ver') }}">
+        <label class="campo campo-quantidade">
+          <span>Quantidade</span>
+          <input type="number" name="quantidade" value="1" min="1" max="{{ [cupcake.estoque, 20]|min }}" required>
+        </label>
+        <button class="botao" type="submit">Adicionar ao carrinho</button>
+      </form>
+    {% else %}
+      <p class="mensagem mensagem-aviso">Este sabor está esgotado no momento.</p>
+    {% endif %}
+  </div>
+</article>
+
+{% if relacionados %}
+<section>
+  <h2>Você também pode gostar</h2>
+  <ul class="grade grade-pequena">
+    {% for outro in relacionados %}
+      <li class="cartao">
+        <a class="cartao-imagem" href="{{ url_for('loja.detalhe', cupcake_id=outro.id) }}" style="--fundo: {{ outro.cor }}">{{ cupcake_svg(outro.cor) }}</a>
+        <div class="cartao-corpo">
+          <h3><a href="{{ url_for('loja.detalhe', cupcake_id=outro.id) }}">{{ outro.nome }}</a></h3>
+          <strong class="preco">{{ outro.preco|moeda }}</strong>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

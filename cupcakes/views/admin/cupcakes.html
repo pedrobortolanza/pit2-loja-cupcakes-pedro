@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "parciais/macros.html" import csrf, cupcake_svg with context %}
+{% set aba = 'cupcakes' %}
+{% block titulo %}Painel · Cupcakes{% endblock %}
+{% block conteudo %}
+<h1>Painel da loja</h1>
+{% include "admin/_abas.html" %}
+<p><a class="botao" href="{{ url_for('admin.novo_cupcake') }}">Cadastrar cupcake</a></p>
+<div class="tabela-rolagem">
+<table class="tabela">
+  <thead><tr><th></th><th>Nome</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Situação</th><th>Ações</th></tr></thead>
+  <tbody>
+    {% for cupcake in cupcakes %}
+    <tr class="{% if not cupcake.ativo %}linha-inativa{% endif %}">
+      <td><span class="miniatura" style="--fundo: {{ cupcake.cor }}">{{ cupcake_svg(cupcake.cor) }}</span></td>
+      <td>{{ cupcake.nome }}{% if cupcake.destaque %} <span class="etiqueta etiqueta-inline">Destaque</span>{% endif %}</td>
+      <td>{{ cupcake.categoria.nome }}</td>
+      <td class="sem-quebra">{{ cupcake.preco|moeda }}</td>
+      <td>{% if cupcake.estoque == 0 %}<span class="texto-perigo">Esgotado</span>{% else %}{{ cupcake.estoque }}{% endif %}</td>
+      <td>{% if cupcake.ativo %}Na vitrine{% else %}Fora da vitrine{% endif %}</td>
+      <td class="acoes">
+        <a class="link" href="{{ url_for('admin.editar_cupcake', cupcake_id=cupcake.id) }}">Editar</a>
+        <form method="post" action="{{ url_for('admin.alternar_cupcake', cupcake_id=cupcake.id) }}">{{ csrf() }}
+          <button class="link-botao" type="submit">{% if cupcake.ativo %}Tirar da vitrine{% else %}Voltar à vitrine{% endif %}</button></form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

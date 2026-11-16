@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "parciais/macros.html" import csrf with context %}
+{% block titulo %}Entrar{% endblock %}
+{% block conteudo %}
+<section class="painel painel-estreito">
+  <h1>Entrar</h1>
+  <p class="texto-suave">Use sua conta para finalizar pedidos e acompanhar entregas.</p>
+  <form method="post" action="{{ url_for('auth.entrar') }}" class="formulario">
+    {{ csrf() }}
+    <input type="hidden" name="proximo" value="{{ proximo }}">
+    <label class="campo"><span>E-mail</span><input type="email" name="email" value="{{ email }}" autocomplete="email" required></label>
+    <label class="campo"><span>Senha</span><input type="password" name="senha" autocomplete="current-password" required></label>
+    <button class="botao botao-largo" type="submit">Entrar</button>
+  </form>
+  <p>Ainda não tem conta? <a class="link" href="{{ url_for('auth.cadastro', proximo=proximo) }}">Cadastre-se</a></p>
+</section>
+{% endblock %}

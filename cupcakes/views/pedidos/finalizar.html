@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "parciais/macros.html" import csrf with context %}
+{% block titulo %}Finalizar pedido{% endblock %}
+{% block conteudo %}
+<h1>Finalizar pedido</h1>
+<form method="post" action="{{ url_for('pedidos.finalizar') }}" class="duas-colunas" data-checkout>
+  {{ csrf() }}
+  <div class="formulario">
+    <fieldset class="painel">
+      <legend>1. Como você quer receber?</legend>
+      <label class="opcao"><input type="radio" name="forma_entrega" value="entrega" {% if dados.get('forma_entrega') != 'retirada' %}checked{% endif %}> Entrega em casa</label>
+      <label class="opcao"><input type="radio" name="forma_entrega" value="retirada" {% if dados.get('forma_entrega') == 'retirada' %}checked{% endif %}> Retirar na loja (sem taxa)</label>
+      <div class="grade-campos" data-endereco>
+        <label class="campo"><span>CEP</span><input type="text" name="cep" value="{{ dados.get('cep', '') }}" inputmode="numeric" placeholder="00000-000" maxlength="9"></label>
+        <label class="campo campo-largo"><span>Rua</span><input type="text" name="logradouro" value="{{ dados.get('logradouro', '') }}" autocomplete="address-line1"></label>
+        <label class="campo"><span>Número</span><input type="text" name="numero" value="{{ dados.get('numero', '') }}"></label>
+        <label class="campo"><span>Complemento</span><input type="text" name="complemento" value="{{ dados.get('complemento', '') }}"></label>
+        <label class="campo"><span>Bairro</span><input type="text" name="bairro" value="{{ dados.get('bairro', '') }}"></label>
+        <label class="campo"><span>Cidade</span><input type="text" name="cidade" value="{{ dados.get('cidade', '') }}" autocomplete="address-level2"></label>
+      </div>
+    </fieldset>
+
+    <fieldset class="painel">
+      <legend>2. Pagamento</legend>
+      <p class="mensagem mensagem-aviso">Ambiente de demonstração: nenhum valor é cobrado. Para cartão use o número de teste 4111 1111 1111 1111. Não digite dados de um cartão real.</p>
+      {% for codigo, rotulo in formas_pagamento.items() %}
+        <label class="opcao"><input type="radio" name="forma_pagamento" value="{{ codigo }}" {% if dados.get('forma_pagamento', 'pix') == codigo %}checked{% endif %}> {{ rotulo }}</label>
+      {% endfor %}
+      <div class="grade-campos" data-cartao>
+        <label class="campo campo-largo"><span>Nome impresso no cartão</span><input type="text" name="titular" autocomplete="off"></label>
+        <label class="campo campo-largo"><span>Número do cartão</span><input type="text" name="numero_cartao" inputmode="numeric" autocomplete="off" placeholder="4111 1111 1111 1111"></label>
+        <label class="campo"><span>Validade</span><input type="text" name="validade" placeholder="MM/AA" maxlength="5" autocomplete="off"></label>
+        <label class="campo"><span>CVV</span><input type="text" name="cvv" inputmode="numeric" maxlength="4" autocomplete="off"></label>
+      </div>
+    </fieldset>
+
+    <fieldset class="painel">
+      <legend>3. Observações (opcional)</legend>
+      <label class="campo"><span class="sr">Observações</span><textarea name="observacao" maxlength="255" rows="3" placeholder="Ex.: tocar o interfone, é presente...">{{ dados.get('observacao', '') }}</textarea></label>
+    </fieldset>
+  </div>
+
+  <aside class="resumo">
+    <h2>Seu pedido</h2>
+    <ul class="resumo-itens">
+      {% for item in itens %}<li><span>{{ item.quantidade }}× {{ item.cupcake.nome }}</span><span>{{ item.subtotal|moeda }}</span></li>{% endfor %}
+    </ul>
+    <dl>
+      <div><dt>Subtotal</dt><dd>{{ subtotal|moeda }}</dd></div>
+      <div><dt>Entrega</dt><dd data-taxa="{{ taxa }}">{% if taxa %}{{ taxa|moeda }}{% else %}Grátis{% endif %}</dd></div>
+      <div class="resumo-total"><dt>Total</dt><dd data-total data-subtotal="{{ subtotal }}">{{ (subtotal + taxa)|moeda }}</dd></div>
+    </dl>
+    <button class="botao botao-largo" type="submit">Confirmar pedido</button>
+    <a class="link" href="{{ url_for('carrinho.ver') }}">Voltar ao carrinho</a>
+  </aside>
+</form>
+{% endblock %}

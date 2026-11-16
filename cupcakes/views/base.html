@@ -1,0 +1,55 @@
+{% from "parciais/macros.html" import csrf with context %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}{{ nome_loja }}{% endblock %} · {{ nome_loja }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧁</text></svg>">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topo">
+    <div class="topo-interno">
+      <a class="marca" href="{{ url_for('loja.vitrine') }}"><span aria-hidden="true">🧁</span> {{ nome_loja }}</a>
+      <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu" data-menu>Menu</button>
+      <nav id="menu" class="menu" aria-label="Principal">
+        <a href="{{ url_for('loja.vitrine') }}">Vitrine</a>
+        {% if usuario %}
+          <a href="{{ url_for('pedidos.lista') }}">Meus pedidos</a>
+          {% if usuario.administrador %}<a href="{{ url_for('admin.pedidos') }}">Painel</a>{% endif %}
+        {% endif %}
+        <a class="carrinho-link" href="{{ url_for('carrinho.ver') }}">Carrinho <span class="contador" aria-label="{{ itens_no_carrinho }} itens">{{ itens_no_carrinho }}</span></a>
+        {% if usuario %}
+          <form method="post" action="{{ url_for('auth.sair') }}" class="form-inline">{{ csrf() }}<button class="link-botao" type="submit">Sair ({{ usuario.primeiro_nome }})</button></form>
+        {% else %}
+          <a class="botao botao-pequeno" href="{{ url_for('auth.entrar') }}">Entrar</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" class="conteudo">
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% if mensagens %}
+        <div class="mensagens" role="status" aria-live="polite">
+          {% for categoria, texto in mensagens %}
+            <div class="mensagem mensagem-{{ categoria }}"><span>{{ texto }}</span><button type="button" class="fechar" aria-label="Fechar aviso" data-fechar>×</button></div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <footer class="rodape">
+    <p>{{ nome_loja }} · Cupcakes artesanais · Frete grátis a partir de {{ frete_gratis|moeda }}</p>
+    <p><a href="{{ url_for('avaliacao.formulario') }}">Testou o site? Deixe sua avaliação</a></p>
+  </footer>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

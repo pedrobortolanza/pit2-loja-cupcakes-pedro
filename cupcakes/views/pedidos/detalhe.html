@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "parciais/macros.html" import csrf, selo_status with context %}
+{% block titulo %}Pedido #{{ pedido.id }}{% endblock %}
+{% block conteudo %}
+<nav class="trilha" aria-label="Você está em"><a href="{{ url_for('pedidos.lista') }}">Meus pedidos</a> › <span>Pedido #{{ pedido.id }}</span></nav>
+<div class="cabecalho-linha">
+  <h1>Pedido #{{ pedido.id }}</h1>
+  {{ selo_status(pedido.status, pedido.status_rotulo) }}
+</div>
+<p class="texto-suave">Feito em {{ pedido.criado_em|data_hora }} · {{ pedido.forma_entrega_rotulo }}</p>
+
+{% if pedido.etapas %}
+<ol class="linha-tempo" aria-label="Andamento do pedido">
+  {% for etapa in pedido.etapas %}
+    <li class="{% if etapa.feito %}feito{% endif %} {% if etapa.atual %}atual{% endif %}" {% if etapa.atual %}aria-current="step"{% endif %}>{{ etapa.rotulo }}</li>
+  {% endfor %}
+</ol>
+{% else %}
+<p class="mensagem mensagem-erro">Este pedido foi cancelado. O estoque foi devolvido{% if pedido.pagamento and pedido.pagamento.status == 'estornado' %} e o pagamento estornado{% endif %}.</p>
+{% endif %}
+
+<div class="duas-colunas">
+  <section class="painel">
+    <h2>Itens</h2>
+    <ul class="resumo-itens">
+      {% for item in pedido.itens %}<li><span>{{ item.quantidade }}× {{ item.nome_cupcake }}</span><span>{{ item.subtotal|moeda }}</span></li>{% endfor %}
+    </ul>
+    <dl>
+      <div><dt>Subtotal</dt><dd>{{ pedido.subtotal|moeda }}</dd></div>
+      <div><dt>Entrega</dt><dd>{% if pedido.taxa_entrega %}{{ pedido.taxa_entrega|moeda }}{% else %}Grátis{% endif %}</dd></div>
+      <div class="resumo-total"><dt>Total</dt><dd>{{ pedido.total|moeda }}</dd></div>
+    </dl>
+    {% if pedido.observacao %}<p><strong>Observação:</strong> {{ pedido.observacao }}</p>{% endif %}
+  </section>
+  <aside class="resumo">
+    <h2>Entrega</h2>
+    <p>{% if pedido.forma_entrega == 'entrega' %}{{ pedido.endereco_formatado }}{% else %}Retirada na loja.{% endif %}</p>
+    {% if pedido.pagamento %}
+      <h2>Pagamento</h2>
+      <p>{{ pedido.pagamento.forma_rotulo }}{% if pedido.pagamento.final_cartao %} final {{ pedido.pagamento.final_cartao }}{% endif %} · {{ pedido.pagamento.status_rotulo }}</p>
+      {% if pedido.pagamento.codigo_transacao %}<p class="texto-suave">Código: {{ pedido.pagamento.codigo_transacao }}</p>{% endif %}
+    {% endif %}
+    {% if pedido.pode_ser_cancelado_pelo_cliente %}
+      <form method="post" action="{{ url_for('pedidos.cancelar', pedido_id=pedido.id) }}" data-confirmar="Cancelar o pedido #{{ pedido.id }}?">
+        {{ csrf() }}
+        <button class="botao botao-perigo botao-largo" type="submit">Cancelar pedido</button>
+      </form>
+      <p class="texto-suave">Você pode cancelar enquanto o pedido não entrar em preparo.</p>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

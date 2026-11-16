@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% set aba = 'avaliacoes' %}
+{% block titulo %}Painel · Avaliações{% endblock %}
+{% block conteudo %}
+<h1>Painel da loja</h1>
+{% include "admin/_abas.html" %}
+<p class="texto-suave">{{ avaliacoes|length }} avaliação(ões) recebida(s). Link para enviar aos testadores: <a class="link" href="{{ url_for('avaliacao.formulario', _external=True) }}">{{ url_for('avaliacao.formulario', _external=True) }}</a></p>
+{% for avaliacao in avaliacoes %}
+  <article class="painel avaliacao">
+    <h2>{{ avaliacao.nome_testador }} <small class="texto-suave">· testou em {{ avaliacao.data_teste|data_hora }}</small></h2>
+    <dl class="lista-definicao">
+      <dt>O que testou e funcionou</dt><dd>{{ avaliacao.funcionou }}</dd>
+      <dt>O que testou e não funcionou / o que corrigir</dt><dd>{{ avaliacao.nao_funcionou or "Nada relatado." }}</dd>
+      <dt>Funcionalidade não testada</dt><dd>{{ avaliacao.nao_testado or "Nada relatado." }}</dd>
+      <dt>Sugestões</dt><dd>{{ avaliacao.sugestoes or "Nenhuma." }}</dd>
+      {% if avaliacao.link_evidencias %}<dt>Evidências</dt><dd><a class="link" href="{{ avaliacao.link_evidencias }}" target="_blank" rel="noopener noreferrer">Abrir prints</a></dd>{% endif %}
+    </dl>
+  </article>
+{% else %}
+  <div class="vazio"><p>Nenhuma avaliação ainda.</p></div>
+{% endfor %}
+{% endblock %}

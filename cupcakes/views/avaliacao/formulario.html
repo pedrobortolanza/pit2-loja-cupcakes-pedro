@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "parciais/macros.html" import csrf with context %}
+{% block titulo %}Avaliação do teste{% endblock %}
+{% block conteudo %}
+<section class="painel painel-medio">
+  <h1>Avaliação do teste</h1>
+  <p>Obrigado por testar a loja! Navegue, crie uma conta, faça um pedido e conte aqui o que encontrou. Para mostrar um erro, tire um print, suba no Google Drive (ou similar) e cole o link.</p>
+  <form method="post" action="{{ url_for('avaliacao.formulario') }}" class="formulario">
+    {{ csrf() }}
+    <div class="grade-campos">
+      <label class="campo campo-largo"><span>Seu nome</span><input type="text" name="nome_testador" value="{{ dados.get('nome_testador', '') }}" required></label>
+      <label class="campo"><span>Data do teste</span><input type="date" name="data_teste" value="{{ dados.get('data_teste', '') }}" required></label>
+    </div>
+    <label class="campo"><span>O que você testou e funcionou?</span><textarea name="funcionou" rows="4" required placeholder="Ex.: cadastro, adicionar ao carrinho, pagamento com Pix...">{{ dados.get('funcionou', '') }}</textarea></label>
+    <label class="campo"><span>O que você testou e não funcionou? O que deve ser corrigido?</span><textarea name="nao_funcionou" rows="4">{{ dados.get('nao_funcionou', '') }}</textarea></label>
+    <label class="campo"><span>Alguma funcionalidade que você não testou ou que faltou? Por quê?</span><textarea name="nao_testado" rows="3">{{ dados.get('nao_testado', '') }}</textarea></label>
+    <label class="campo"><span>Sugestões de melhoria</span><textarea name="sugestoes" rows="3">{{ dados.get('sugestoes', '') }}</textarea></label>
+    <label class="campo"><span>Link dos prints (opcional)</span><input type="url" name="link_evidencias" value="{{ dados.get('link_evidencias', '') }}" placeholder="https://drive.google.com/..."></label>
+    <button class="botao" type="submit">Enviar avaliação</button>
+  </form>
+</section>
+{% endblock %}

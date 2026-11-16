@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "parciais/macros.html" import csrf with context %}
+{% block titulo %}Criar conta{% endblock %}
+{% block conteudo %}
+<section class="painel painel-estreito">
+  <h1>Criar conta</h1>
+  <form method="post" action="{{ url_for('auth.cadastro') }}" class="formulario">
+    {{ csrf() }}
+    <input type="hidden" name="proximo" value="{{ proximo }}">
+    <label class="campo"><span>Nome completo</span><input type="text" name="nome" value="{{ dados.get('nome', '') }}" autocomplete="name" minlength="3" required></label>
+    <label class="campo"><span>E-mail</span><input type="email" name="email" value="{{ dados.get('email', '') }}" autocomplete="email" required></label>
+    <label class="campo"><span>Telefone (opcional)</span><input type="tel" name="telefone" value="{{ dados.get('telefone', '') }}" autocomplete="tel" placeholder="(41) 99999-9999"></label>
+    <label class="campo"><span>Senha</span><input type="password" name="senha" autocomplete="new-password" minlength="6" required><small>Mínimo de 6 caracteres.</small></label>
+    <label class="campo"><span>Confirme a senha</span><input type="password" name="confirmacao" autocomplete="new-password" minlength="6" required></label>
+    <button class="botao botao-largo" type="submit">Criar conta</button>
+  </form>
+  <p>Já tem conta? <a class="link" href="{{ url_for('auth.entrar', proximo=proximo) }}">Entrar</a></p>
+</section>
+{% endblock %}

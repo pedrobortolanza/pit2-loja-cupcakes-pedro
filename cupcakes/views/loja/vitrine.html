@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% from "parciais/macros.html" import csrf, cupcake_svg with context %}
+{% block titulo %}Vitrine{% endblock %}
+{% block conteudo %}
+<section class="destaque-topo">
+  <div>
+    <h1>Cupcakes artesanais, feitos hoje</h1>
+    <p>Escolha seus sabores, pague por Pix ou cartão e receba em casa. Frete grátis a partir de {{ frete_gratis|moeda }}.</p>
+  </div>
+</section>
+
+<form class="filtros" method="get" action="{{ url_for('loja.vitrine') }}" role="search">
+  <label class="campo campo-busca">
+    <span>Buscar sabor</span>
+    <input type="search" name="busca" value="{{ busca }}" placeholder="Ex.: morango, chocolate">
+  </label>
+  <label class="campo">
+    <span>Categoria</span>
+    <select name="categoria">
+      <option value="">Todas</option>
+      {% for categoria in categorias %}
+        <option value="{{ categoria.id }}" {% if categoria_id == categoria.id %}selected{% endif %}>{{ categoria.nome }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button class="botao" type="submit">Filtrar</button>
+  {% if busca or categoria_id %}<a class="link" href="{{ url_for('loja.vitrine') }}">Limpar filtros</a>{% endif %}
+</form>
+
+{% if cupcakes %}
+  <ul class="grade">
+    {% for cupcake in cupcakes %}
+      <li class="cartao {% if not cupcake.disponivel %}cartao-esgotado{% endif %}">
+        <a class="cartao-imagem" href="{{ url_for('loja.detalhe', cupcake_id=cupcake.id) }}" style="--fundo: {{ cupcake.cor }}">
+          {{ cupcake_svg(cupcake.cor) }}
+          {% if cupcake.destaque %}<span class="etiqueta">Mais pedido</span>{% endif %}
+          {% if not cupcake.disponivel %}<span class="etiqueta etiqueta-cinza">Esgotado</span>{% endif %}
+        </a>
+        <div class="cartao-corpo">
+          <p class="cartao-categoria">{{ cupcake.categoria.nome }}</p>
+          <h2><a href="{{ url_for('loja.detalhe', cupcake_id=cupcake.id) }}">{{ cupcake.nome }}</a></h2>
+          <p class="cartao-descricao">{{ cupcake.descricao }}</p>
+          <div class="cartao-rodape">
+            <strong class="preco">{{ cupcake.preco|moeda }}</strong>
+            {% if cupcake.disponivel %}
+              <form method="post" action="{{ url_for('carrinho.adicionar', cupcake_id=cupcake.id) }}">
+                {{ csrf() }}
+                <input type="hidden" name="quantidade" value="1">
+                <input type="hidden" name="voltar" value="{{ request.full_path }}">
+                <button class="botao botao-pequeno" type="submit">Adicionar</button>
+              </form>
+            {% else %}
+              <span class="texto-suave">Volta em breve</span>
+            {% endif %}
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="vazio">
+    <p>Nenhum cupcake encontrado{% if busca %} para “{{ busca }}”{% endif %}.</p>
+    <a class="botao" href="{{ url_for('loja.vitrine') }}">Ver todos os sabores</a>
+  </div>
+{% endif %}
+{% endblock %}

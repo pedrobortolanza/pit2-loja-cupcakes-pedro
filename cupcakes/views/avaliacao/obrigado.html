@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block titulo %}Obrigado{% endblock %}
+{% block conteudo %}
+<section class="vazio">
+  <p class="emoji-grande" aria-hidden="true">🧁</p>
+  <h1>Avaliação enviada!</h1>
+  <p>Muito obrigado pela ajuda. Seu retorno vai direto para a lista de correções.</p>
+  <a class="botao" href="{{ url_for('loja.vitrine') }}">Voltar para a loja</a>
+</section>
+{% endblock %}

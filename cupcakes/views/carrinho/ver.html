@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "parciais/macros.html" import csrf, cupcake_svg with context %}
+{% block titulo %}Carrinho{% endblock %}
+{% block conteudo %}
+<h1>Seu carrinho</h1>
+{% if itens %}
+<div class="duas-colunas">
+  <ul class="lista-itens">
+    {% for item in itens %}
+      <li class="item">
+        <div class="item-arte" style="--fundo: {{ item.cupcake.cor }}">{{ cupcake_svg(item.cupcake.cor) }}</div>
+        <div class="item-info">
+          <h2><a href="{{ url_for('loja.detalhe', cupcake_id=item.cupcake.id) }}">{{ item.cupcake.nome }}</a></h2>
+          <p class="texto-suave">{{ item.cupcake.preco|moeda }} cada</p>
+          <div class="item-acoes">
+            <form method="post" action="{{ url_for('carrinho.atualizar', cupcake_id=item.cupcake.id) }}" class="form-linha">
+              {{ csrf() }}
+              <label class="campo campo-quantidade"><span class="sr">Quantidade de {{ item.cupcake.nome }}</span>
+                <input type="number" name="quantidade" value="{{ item.quantidade }}" min="0" max="20" required></label>
+              <button class="botao botao-pequeno botao-secundario" type="submit">Atualizar</button>
+            </form>
+            <form method="post" action="{{ url_for('carrinho.remover', cupcake_id=item.cupcake.id) }}">
+              {{ csrf() }}
+              <button class="link-botao link-perigo" type="submit">Remover</button>
+            </form>
+          </div>
+        </div>
+        <strong class="item-total">{{ item.subtotal|moeda }}</strong>
+      </li>
+    {% endfor %}
+  </ul>
+  <aside class="resumo">
+    <h2>Resumo</h2>
+    <dl>
+      <div><dt>Subtotal</dt><dd>{{ subtotal|moeda }}</dd></div>
+      <div><dt>Entrega</dt><dd>{% if taxa %}{{ taxa|moeda }}{% else %}Grátis{% endif %}</dd></div>
+      <div class="resumo-total"><dt>Total</dt><dd>{{ (subtotal + taxa)|moeda }}</dd></div>
+    </dl>
+    {% if falta_frete_gratis > 0 %}<p class="texto-suave">Faltam {{ falta_frete_gratis|moeda }} para o frete grátis.</p>{% endif %}
+    <p class="texto-suave">Retirando na loja, a entrega não é cobrada.</p>
+    <a class="botao botao-largo" href="{{ url_for('pedidos.finalizar') }}">Finalizar pedido</a>
+    <a class="link" href="{{ url_for('loja.vitrine') }}">Continuar comprando</a>
+  </aside>
+</div>
+{% else %}
+  <div class="vazio">
+    <p>Seu carrinho está vazio.</p>
+    <a class="botao" href="{{ url_for('loja.vitrine') }}">Escolher cupcakes</a>
+  </div>
+{% endif %}
+{% endblock %}
