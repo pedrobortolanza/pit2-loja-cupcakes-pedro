@@ -34,16 +34,16 @@ Cartão de teste: `4111 1111 1111 1111`, validade `12/30`, CVV `123`.
 ## 3. O que falta (em ordem)
 
 ### Passo 1: ligar o site ao banco (uma vez só, 5 minutos)
-Sem isso, o site no ar mostra erro.
+Sem isso, o site no ar mostra "A server error has occurred / FUNCTION_INVOCATION_FAILED". Nos logs da Vercel aparece "Variável DATABASE_URL não configurada".
 1. No Supabase, abra o projeto **loja-cupcakes** → botão **Connect** (no topo) → aba **Connection string** → escolha **Transaction pooler**.
 2. Copie a string (começa com `postgresql://postgres.hjqdsyrfzikjeqsttocp:`). Onde estiver `[YOUR-PASSWORD]`, coloque a senha do banco. Se não souber a senha: **Project Settings → Database → Reset database password**.
 3. Na Vercel, projeto **pit2-loja-cupcakes** → **Settings → Environment Variables** → **Add**:
    - Key: `DATABASE_URL`
    - Value: a string do passo 2
    - Environments: Production e Preview
-4. Ainda em **Settings**, vá em **Deployment Protection** → **Vercel Authentication** e troque para **Standard Protection** (ou desligue). Do jeito que o time ARKAN veio configurado, só quem tem login na Vercel consegue abrir o site, e os colegas e o tutor veriam uma tela de login da Vercel. Com Standard Protection, o endereço principal fica aberto para todos.
-5. Em **Deployments**, clique nos três pontinhos do último deploy → **Redeploy**.
-6. Abra o site, entre como admin e faça um pedido de teste. Se aparecer a vitrine com os cupcakes, está funcionando.
+4. Em **Deployments**, clique nos três pontinhos do último deploy → **Redeploy**.
+5. Abra https://pit2-loja-cupcakes.vercel.app, entre como admin e faça um pedido de teste. Se aparecer a vitrine com os cupcakes, está funcionando.
+6. Abra o mesmo endereço numa **janela anônima**, para ver como os colegas vão ver. O endereço principal já está aberto ao público. Se mesmo assim aparecer uma tela de login da Vercel, vá em **Settings → Deployment Protection → Vercel Authentication** e escolha **Standard Protection**. Use sempre o endereço principal: os endereços longos de cada deploy (`pit2-loja-cupcakes-xxxx-arkanteam.vercel.app`) pedem login da Vercel.
 
 > `SECRET_KEY` já está configurada na Vercel. Não precisa mexer.
 

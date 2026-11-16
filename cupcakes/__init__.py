@@ -41,6 +41,8 @@ def create_app(configuracao=Config):
     app = Flask(__name__, template_folder="views", static_folder=os.path.join(RAIZ, "public", "static"),
                 static_url_path="/static")
     app.config.from_object(configuracao)
+    if os.environ.get("VERCEL") and app.config["SQLALCHEMY_DATABASE_URI"].startswith("sqlite"):
+        raise RuntimeError("Variável DATABASE_URL não configurada na Vercel. Veja o passo 1 do COMO-CONTINUAR.md.")
     db.init_app(app)
 
     for blueprint in BLUEPRINTS:
