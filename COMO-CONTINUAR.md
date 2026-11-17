@@ -34,6 +34,9 @@ Cartão de teste: `4111 1111 1111 1111`, validade `12/30`, CVV `123`.
 ## 3. O que falta (em ordem)
 
 ### Passo 1: ligar o site ao banco (uma vez só, 5 minutos)
+
+**Jeito mais fácil:** no Supabase, projeto **loja-cupcakes** → **Project Settings → Integrations → Vercel**, ligue ao projeto **pit2-loja-cupcakes** da Vercel e faça um **Redeploy**. A integração cria a variável `POSTGRES_URL` sozinha, e o código usa ela no lugar da `DATABASE_URL`. Se preferir fazer à mão, siga os passos abaixo.
+
 Sem isso, o site no ar mostra "A server error has occurred / FUNCTION_INVOCATION_FAILED". Nos logs da Vercel aparece "Variável DATABASE_URL não configurada".
 1. No Supabase, abra o projeto **loja-cupcakes** → botão **Connect** (no topo) → aba **Connection string** → escolha **Transaction pooler**.
 2. Copie a string (começa com `postgresql://postgres.hjqdsyrfzikjeqsttocp:`). Onde estiver `[YOUR-PASSWORD]`, coloque a senha do banco. Se não souber a senha: **Project Settings → Database → Reset database password**.

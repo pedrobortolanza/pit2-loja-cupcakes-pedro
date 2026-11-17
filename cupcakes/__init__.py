@@ -42,7 +42,7 @@ def create_app(configuracao=Config):
                 static_url_path="/static")
     app.config.from_object(configuracao)
     if os.environ.get("VERCEL") and app.config["SQLALCHEMY_DATABASE_URI"].startswith("sqlite"):
-        raise RuntimeError("Variável DATABASE_URL não configurada na Vercel. Veja o passo 1 do COMO-CONTINUAR.md.")
+        raise RuntimeError("Banco não configurado na Vercel (faltam POSTGRES_URL e DATABASE_URL). Veja o passo 1 do COMO-CONTINUAR.md.")
     db.init_app(app)
 
     for blueprint in BLUEPRINTS:
