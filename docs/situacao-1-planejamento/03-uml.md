@@ -293,7 +293,7 @@ sequenceDiagram
       PC-->>V: 422 + motivo da recusa
     else aprovado ou pendente
       PG-->>PS: Pagamento
-      PS->>DB: INSERT pedido, itens, pagamento; UPDATE estoque
+      PS->>DB: INSERT pedido, itens, pagamento e UPDATE estoque
       PS->>DB: COMMIT
       PS->>CS: limpar()
       PS-->>PC: Pedido
