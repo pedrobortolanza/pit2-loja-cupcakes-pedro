@@ -6,6 +6,7 @@ from cupcakes.extensions import db
 from cupcakes.models.base import agora
 
 PADRAO_COR = re.compile(r"^#[0-9a-fA-F]{6}$")
+PADRAO_FOTO = re.compile(r"^https://[^\s\"'<>]{4,490}$")
 
 
 class Cupcake(db.Model):
@@ -21,6 +22,7 @@ class Cupcake(db.Model):
     preco = db.Column(db.Numeric(8, 2), nullable=False)
     estoque = db.Column(db.Integer, nullable=False, default=0)
     cor = db.Column(db.String(7), nullable=False, default="#f4a6c1")
+    foto_url = db.Column(db.String(500))
     destaque = db.Column(db.Boolean, nullable=False, default=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     categoria_id = db.Column(db.Integer, db.ForeignKey("categoria.id"), nullable=False, index=True)
@@ -54,6 +56,9 @@ class Cupcake(db.Model):
         cor = (dados.get("cor") or "#f4a6c1").strip()
         if not PADRAO_COR.match(cor):
             erros.append("Escolha uma cor válida para a cobertura.")
+        foto_url = (dados.get("foto_url") or "").strip()
+        if foto_url and not PADRAO_FOTO.match(foto_url):
+            erros.append("O link da foto precisa começar com https:// e não pode ter espaços.")
         try:
             categoria_id = int(dados.get("categoria_id", ""))
         except ValueError:
@@ -66,6 +71,7 @@ class Cupcake(db.Model):
         self.preco = preco
         self.estoque = estoque
         self.cor = cor
+        self.foto_url = foto_url or None
         self.categoria_id = categoria_id
         self.destaque = dados.get("destaque") in ("on", "1", "true", True)
 

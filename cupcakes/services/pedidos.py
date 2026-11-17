@@ -1,11 +1,15 @@
 import re
+from datetime import date, timedelta
 from decimal import Decimal
 
 from cupcakes.erros import ErroNegocio
 from cupcakes.extensions import db
 from cupcakes.models import Cupcake, ItemPedido, Pedido
-from cupcakes.models.base import agora
+from cupcakes.models.base import agora, hoje_local
 from cupcakes.services.pagamentos import processar_pagamento
+
+FAIXAS_HORARIO = ["09h às 12h", "12h às 15h", "15h às 18h", "18h às 21h"]
+DIAS_PARA_AGENDAR = 7
 
 CAMPOS_ENDERECO = {
     "logradouro": "rua",
@@ -37,7 +41,33 @@ def validar_endereco(dados):
     return endereco
 
 
-def criar_pedido(cliente, carrinho, forma_entrega, dados_endereco, forma_pagamento, dados_cartao, observacao, config):
+def datas_para_agendar(hoje=None):
+    """Do dia seguinte até DIAS_PARA_AGENDAR dias à frente. Para hoje, vale a opção "o quanto antes"."""
+    hoje = hoje or hoje_local()
+    return [hoje + timedelta(days=dias) for dias in range(1, DIAS_PARA_AGENDAR + 1)]
+
+
+def validar_agendamento(dados, hoje=None):
+    """Devolve (data, faixa) quando o cliente escolhe agendar, ou (None, None) para "o quanto antes"."""
+    if (dados.get("quando") or "agora") != "agendado":
+        return None, None
+    erros = []
+    try:
+        data = date.fromisoformat((dados.get("data_agendada") or "").strip())
+    except ValueError:
+        data = None
+    if data not in datas_para_agendar(hoje):
+        erros.append(f"Escolha um dia para o agendamento entre amanhã e os próximos {DIAS_PARA_AGENDAR} dias.")
+    faixa = (dados.get("faixa_horario") or "").strip()
+    if faixa not in FAIXAS_HORARIO:
+        erros.append("Escolha um horário para o agendamento.")
+    if erros:
+        raise ErroNegocio(" ".join(erros))
+    return data, faixa
+
+
+def criar_pedido(cliente, carrinho, forma_entrega, dados_endereco, forma_pagamento, dados_cartao, observacao, config,
+                 dados_agendamento=None, hoje=None):
     itens = carrinho.itens()
     if not itens:
         raise ErroNegocio("Seu carrinho está vazio.")
@@ -46,6 +76,7 @@ def criar_pedido(cliente, carrinho, forma_entrega, dados_endereco, forma_pagamen
     if forma_pagamento not in ("pix", "cartao", "dinheiro"):
         raise ErroNegocio("Escolha uma forma de pagamento.")
     endereco = validar_endereco(dados_endereco) if forma_entrega == "entrega" else {}
+    data_agendada, faixa_horario = validar_agendamento(dados_agendamento or {}, hoje)
 
     bloqueados = []
     subtotal = Decimal("0.00")
@@ -71,6 +102,8 @@ def criar_pedido(cliente, carrinho, forma_entrega, dados_endereco, forma_pagamen
         cliente=cliente,
         forma_entrega=forma_entrega,
         observacao=(observacao or "").strip()[:255],
+        data_agendada=data_agendada,
+        faixa_horario=faixa_horario,
         subtotal=subtotal,
         taxa_entrega=taxa,
         total=total,

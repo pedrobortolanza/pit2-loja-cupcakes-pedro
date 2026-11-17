@@ -35,6 +35,11 @@
   <aside class="resumo">
     <h2>Entrega</h2>
     <p>{% if pedido.forma_entrega == 'entrega' %}{{ pedido.endereco_formatado }}{% else %}Retirada na loja.{% endif %}</p>
+    {% if pedido.agendado %}
+      <p class="destaque-info"><strong>Agendado para {{ pedido.data_agendada|data_curta }}, das {{ pedido.faixa_horario }}</strong></p>
+    {% elif previsao %}
+      <p class="destaque-info"><strong>Previsão: {% if pedido.forma_entrega == 'entrega' %}chega até{% else %}pronto para retirar até{% endif %} {{ previsao|hora }}</strong></p>
+    {% endif %}
     {% if pedido.pagamento %}
       <h2>Pagamento</h2>
       <p>{{ pedido.pagamento.forma_rotulo }}{% if pedido.pagamento.final_cartao %} final {{ pedido.pagamento.final_cartao }}{% endif %} · {{ pedido.pagamento.status_rotulo }}</p>

@@ -11,12 +11,33 @@
       <label class="opcao"><input type="radio" name="forma_entrega" value="entrega" {% if dados.get('forma_entrega') != 'retirada' %}checked{% endif %}> Entrega em casa</label>
       <label class="opcao"><input type="radio" name="forma_entrega" value="retirada" {% if dados.get('forma_entrega') == 'retirada' %}checked{% endif %}> Retirar na loja (sem taxa)</label>
       <div class="grade-campos" data-endereco>
-        <label class="campo"><span>CEP</span><input type="text" name="cep" value="{{ dados.get('cep', '') }}" inputmode="numeric" placeholder="00000-000" maxlength="9"></label>
+        <label class="campo"><span>CEP</span><input type="text" name="cep" value="{{ dados.get('cep', '') }}" inputmode="numeric" placeholder="00000-000" maxlength="9" autocomplete="postal-code">
+          <small data-cep-status aria-live="polite">Digite o CEP e preenchemos rua, bairro e cidade.</small></label>
         <label class="campo campo-largo"><span>Rua</span><input type="text" name="logradouro" value="{{ dados.get('logradouro', '') }}" autocomplete="address-line1"></label>
         <label class="campo"><span>Número</span><input type="text" name="numero" value="{{ dados.get('numero', '') }}"></label>
         <label class="campo"><span>Complemento</span><input type="text" name="complemento" value="{{ dados.get('complemento', '') }}"></label>
         <label class="campo"><span>Bairro</span><input type="text" name="bairro" value="{{ dados.get('bairro', '') }}"></label>
         <label class="campo"><span>Cidade</span><input type="text" name="cidade" value="{{ dados.get('cidade', '') }}" autocomplete="address-level2"></label>
+      </div>
+      <div class="agendamento">
+        <p class="subtitulo">Quando?</p>
+        <label class="opcao"><input type="radio" name="quando" value="agora" {% if dados.get('quando') != 'agendado' %}checked{% endif %}>
+          <span>O quanto antes <small class="texto-suave" data-prazo data-prazo-entrega="em até {{ prazo_entrega }} minutos" data-prazo-retirada="pronto em até {{ prazo_retirada }} minutos">(em até {{ prazo_entrega }} minutos)</small></span></label>
+        <label class="opcao"><input type="radio" name="quando" value="agendado" {% if dados.get('quando') == 'agendado' %}checked{% endif %}> Agendar dia e horário</label>
+        <div class="grade-campos" data-agendamento>
+          <label class="campo"><span>Dia</span>
+            <select name="data_agendada">
+              <option value="">Escolha o dia</option>
+              {% for dia in datas_agendamento %}<option value="{{ dia.isoformat() }}" {% if dados.get('data_agendada') == dia.isoformat() %}selected{% endif %}>{{ dia|data_curta }}</option>{% endfor %}
+            </select>
+          </label>
+          <label class="campo"><span>Horário</span>
+            <select name="faixa_horario">
+              <option value="">Escolha o horário</option>
+              {% for faixa in faixas_horario %}<option value="{{ faixa }}" {% if dados.get('faixa_horario') == faixa %}selected{% endif %}>{{ faixa }}</option>{% endfor %}
+            </select>
+          </label>
+        </div>
       </div>
     </fieldset>
 

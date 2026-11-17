@@ -26,7 +26,9 @@ Cartão de teste: `4111 1111 1111 1111`, validade `12/30`, CVV `123`.
 
 - [x] Banco PostgreSQL no Supabase com tabelas e dados iniciais
 - [x] Site completo em Python/Flask (MVC): vitrine, carrinho, login, pedido, pagamento simulado, acompanhamento, painel do lojista, formulário de avaliação
-- [x] 62 testes automatizados passando
+- [x] 92 testes automatizados passando
+- [x] Vídeo 1 gravado e editado
+- [x] 5 avaliações recebidas e copiadas para o docx e para `docs/situacao-3-testes/03-avaliacoes-recebidas.md`
 - [x] Documentação das 3 situações em [`docs/`](docs/) (histórias, UML, telas, banco, dicionário de dados, arquitetura, manual, plano de testes, modelo do laudo)
 - [x] Projeto criado na Vercel e ligado a este repositório (cada `git push` publica o site)
 - [x] Docx de entrega preenchido com nome, links e dados técnicos

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "parciais/macros.html" import csrf, cupcake_svg with context %}
+{% from "parciais/macros.html" import csrf, cupcake_svg, arte with context %}
 {% block titulo %}Carrinho{% endblock %}
 {% block conteudo %}
 <h1>Seu carrinho</h1>
@@ -8,7 +8,7 @@
   <ul class="lista-itens">
     {% for item in itens %}
       <li class="item">
-        <div class="item-arte" style="--fundo: {{ item.cupcake.cor }}">{{ cupcake_svg(item.cupcake.cor) }}</div>
+        <div class="item-arte" style="--fundo: {{ item.cupcake.cor }}">{{ arte(item.cupcake.cor, item.cupcake.foto_url, item.cupcake.nome) }}</div>
         <div class="item-info">
           <h2><a href="{{ url_for('loja.detalhe', cupcake_id=item.cupcake.id) }}">{{ item.cupcake.nome }}</a></h2>
           <p class="texto-suave">{{ item.cupcake.preco|moeda }} cada</p>

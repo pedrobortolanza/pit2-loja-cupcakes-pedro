@@ -21,6 +21,7 @@
         <a href="{{ url_for('loja.vitrine') }}">Vitrine</a>
         {% if usuario %}
           <a href="{{ url_for('pedidos.lista') }}">Meus pedidos</a>
+          <a href="{{ url_for('conta.minha_conta') }}">Minha conta</a>
           {% if usuario.administrador %}<a href="{{ url_for('admin.pedidos') }}">Painel</a>{% endif %}
         {% endif %}
         <a class="carrinho-link" href="{{ url_for('carrinho.ver') }}">Carrinho <span class="contador" aria-label="{{ itens_no_carrinho }} itens">{{ itens_no_carrinho }}</span></a>

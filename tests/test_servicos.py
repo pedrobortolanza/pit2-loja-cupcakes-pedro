@@ -1,12 +1,16 @@
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 
 import pytest
 
 from cupcakes.erros import ErroNegocio
+from cupcakes.models import Pedido
+from cupcakes.models.base import agora, como_utc, hoje_local
 from cupcakes.services.carrinho import Carrinho
 from cupcakes.services.pagamentos import numero_cartao_valido, processar_pagamento, validade_cartao_valida
-from cupcakes.services.pedidos import avancar_status, calcular_taxa_entrega, cancelar_pedido, criar_pedido, validar_endereco
+from cupcakes.services.pedidos import (FAIXAS_HORARIO, avancar_status, calcular_taxa_entrega, cancelar_pedido,
+                                       criar_pedido, datas_para_agendar, validar_agendamento, validar_endereco)
+from cupcakes.services.relatorio import resumo_vendas
 from tests.conftest import CARTAO_TESTE, ENDERECO
 
 CONFIG = {"TAXA_ENTREGA": Decimal("7.00"), "FRETE_GRATIS_A_PARTIR": Decimal("80.00")}
@@ -181,3 +185,82 @@ def test_fluxo_de_status_da_entrega(db, conta, cupcake):
 def test_fluxo_de_status_da_retirada(db, conta, cupcake):
     pedido = criar_pedido(conta, Carrinho({str(cupcake.id): 1}), "retirada", {}, "pix", {}, "", CONFIG)
     assert pedido.fluxo == ["recebido", "em_preparo", "pronto_para_retirada", "entregue"]
+
+
+# Correções do laudo de qualidade (B02, S04, S05)
+
+HOJE = date(2026, 11, 18)
+
+
+def test_agendamento_e_opcional():
+    assert validar_agendamento({}, HOJE) == (None, None)
+    assert validar_agendamento({"quando": "agora", "data_agendada": "2026-11-19"}, HOJE) == (None, None)
+
+
+def test_agendamento_aceita_dia_e_horario_validos():
+    dados = {"quando": "agendado", "data_agendada": "2026-11-20", "faixa_horario": FAIXAS_HORARIO[2]}
+    assert validar_agendamento(dados, HOJE) == (date(2026, 11, 20), FAIXAS_HORARIO[2])
+
+
+@pytest.mark.parametrize("data", ["2026-11-18", "2026-11-26", "2026-11-17", "amanha", ""])
+def test_agendamento_recusa_dia_fora_do_prazo(data):
+    with pytest.raises(ErroNegocio, match="Escolha um dia"):
+        validar_agendamento({"quando": "agendado", "data_agendada": data, "faixa_horario": FAIXAS_HORARIO[0]}, HOJE)
+
+
+def test_agendamento_exige_horario_da_lista():
+    with pytest.raises(ErroNegocio, match="horário"):
+        validar_agendamento({"quando": "agendado", "data_agendada": "2026-11-19", "faixa_horario": "03h às 04h"}, HOJE)
+
+
+def test_datas_para_agendar_vao_de_amanha_ate_7_dias():
+    datas = datas_para_agendar(HOJE)
+    assert datas[0] == date(2026, 11, 19)
+    assert datas[-1] == date(2026, 11, 25)
+    assert len(datas) == 7
+
+
+def test_pedido_agendado_guarda_dia_e_horario(db, conta, cupcake):
+    agendamento = {"quando": "agendado", "data_agendada": "2026-11-21", "faixa_horario": FAIXAS_HORARIO[3]}
+    pedido = criar_pedido(conta, Carrinho({str(cupcake.id): 1}), "retirada", {}, "pix", {}, "", CONFIG,
+                          dados_agendamento=agendamento, hoje=HOJE)
+    assert pedido.agendado
+    assert pedido.data_agendada == date(2026, 11, 21)
+    assert pedido.faixa_horario == FAIXAS_HORARIO[3]
+    assert pedido.previsao(60, 30) is None
+
+
+def test_previsao_de_chegada_depende_da_forma_de_entrega(db, conta, cupcake):
+    entrega = criar_pedido(conta, Carrinho({str(cupcake.id): 1}), "entrega", ENDERECO, "pix", {}, "", CONFIG)
+    retirada = criar_pedido(conta, Carrinho({str(cupcake.id): 1}), "retirada", {}, "pix", {}, "", CONFIG)
+    assert entrega.previsao(60, 30) - como_utc(entrega.criado_em) == timedelta(minutes=60)
+    assert retirada.previsao(60, 30) - como_utc(retirada.criado_em) == timedelta(minutes=30)
+    cancelar_pedido(entrega)
+    assert entrega.previsao(60, 30) is None
+
+
+def test_relatorio_soma_vendas_e_ignora_cancelados(db, conta, cupcake, outro_cupcake):
+    criar_pedido(conta, Carrinho({str(cupcake.id): 2}), "retirada", {}, "pix", {}, "", CONFIG)
+    criar_pedido(conta, Carrinho({str(outro_cupcake.id): 3}), "retirada", {}, "pix", {}, "", CONFIG)
+    cancelado = criar_pedido(conta, Carrinho({str(cupcake.id): 1}), "retirada", {}, "pix", {}, "", CONFIG)
+    cancelar_pedido(cancelado)
+    antigo = criar_pedido(conta, Carrinho({str(outro_cupcake.id): 1}), "retirada", {}, "pix", {}, "", CONFIG)
+    antigo.criado_em = agora() - timedelta(days=30)
+    db.session.commit()
+
+    resumo = resumo_vendas(Pedido.query.all(), hoje_local())
+    assert resumo["vendas_hoje"] == Decimal("44.00")
+    assert resumo["pedidos_hoje"] == 2
+    assert resumo["ticket_medio_hoje"] == Decimal("22.00")
+    assert resumo["pedidos_semana"] == 2
+    assert resumo["cancelados"] == 1
+    assert resumo["em_aberto"] == 3
+    assert [sabor["nome"] for sabor in resumo["mais_vendidos"]] == ["Baunilha", "Chocolate"]
+    assert resumo["mais_vendidos"][0]["quantidade"] == 4
+
+
+def test_relatorio_sem_vendas():
+    resumo = resumo_vendas([], HOJE)
+    assert resumo["vendas_hoje"] == Decimal("0.00")
+    assert resumo["ticket_medio_hoje"] == Decimal("0.00")
+    assert resumo["mais_vendidos"] == []

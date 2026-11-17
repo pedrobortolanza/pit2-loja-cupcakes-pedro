@@ -1,7 +1,8 @@
+from datetime import timedelta
 from decimal import Decimal
 
 from cupcakes.extensions import db
-from cupcakes.models.base import agora
+from cupcakes.models.base import agora, como_utc
 
 STATUS_ROTULOS = {
     "recebido": "Recebido",
@@ -42,6 +43,8 @@ class Pedido(db.Model):
     bairro = db.Column(db.String(60))
     cidade = db.Column(db.String(60))
     observacao = db.Column(db.String(255), nullable=False, default="")
+    data_agendada = db.Column(db.Date)
+    faixa_horario = db.Column(db.String(20))
     subtotal = db.Column(db.Numeric(10, 2), nullable=False)
     taxa_entrega = db.Column(db.Numeric(10, 2), nullable=False, default=Decimal("0.00"))
     total = db.Column(db.Numeric(10, 2), nullable=False)
@@ -88,6 +91,17 @@ class Pedido(db.Model):
             {"rotulo": STATUS_ROTULOS[codigo], "feito": indice <= atual, "atual": indice == atual}
             for indice, codigo in enumerate(self.fluxo)
         ]
+
+    @property
+    def agendado(self):
+        return self.data_agendada is not None
+
+    def previsao(self, prazo_entrega_minutos, prazo_retirada_minutos):
+        """Horário estimado de chegada (entrega) ou de ficar pronto (retirada). None se agendado ou finalizado."""
+        if self.agendado or self.finalizado or self.criado_em is None:
+            return None
+        prazo = prazo_retirada_minutos if self.forma_entrega == "retirada" else prazo_entrega_minutos
+        return como_utc(self.criado_em) + timedelta(minutes=prazo)
 
     @property
     def quantidade_itens(self):

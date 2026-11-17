@@ -233,3 +233,21 @@ legend { font-family: var(--fonte-titulo); font-weight: 700; font-size: 1.15rem;
 
 .sem-quebra { white-space: nowrap; }
 .texto-pequeno { font-size: .95rem; font-weight: 400; }
+
+/* Foto do cupcake (quando cadastrada) */
+.cartao-imagem, .produto-imagem, .item-arte, .miniatura { overflow: hidden; }
+.cupcake-foto { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cartao-esgotado .cupcake-foto { filter: grayscale(.8); opacity: .7; }
+
+/* Agendamento e previsão */
+.agendamento { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--borda); }
+.subtitulo { font-weight: 700; margin: 0 0 4px; }
+.destaque-info { background: #fbf1e8; border-radius: 10px; padding: 10px 12px; }
+.agendado { color: var(--rosa-escuro); font-weight: 700; }
+
+/* Relatório de vendas */
+.indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.indicador { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.indicador span { color: var(--cacau-suave); font-weight: 600; }
+.indicador strong { font-family: var(--fonte-titulo); font-size: 1.7rem; }
+.indicador small { color: var(--cacau-suave); }

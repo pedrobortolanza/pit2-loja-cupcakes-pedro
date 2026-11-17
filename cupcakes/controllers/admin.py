@@ -6,6 +6,7 @@ from cupcakes.models import AvaliacaoTeste, Categoria, Cupcake, Pedido
 from cupcakes.models.pedido import STATUS_ROTULOS
 from cupcakes.seguranca import admin_obrigatorio
 from cupcakes.services.pedidos import avancar_status, cancelar_pedido
+from cupcakes.services.relatorio import resumo_vendas
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -82,7 +83,8 @@ def _formulario(cupcake, titulo):
     dados = {}
     if cupcake.id:
         dados = {"nome": cupcake.nome, "descricao": cupcake.descricao, "preco": f"{cupcake.preco:.2f}".replace(".", ","),
-                 "estoque": cupcake.estoque, "cor": cupcake.cor, "categoria_id": cupcake.categoria_id,
+                 "estoque": cupcake.estoque, "cor": cupcake.cor, "foto_url": cupcake.foto_url or "",
+                 "categoria_id": cupcake.categoria_id,
                  "destaque": "on" if cupcake.destaque else ""}
     return render_template("admin/cupcake_form.html", cupcake=cupcake, dados=dados, categorias=categorias,
                            titulo=titulo)
@@ -110,6 +112,12 @@ def alternar_cupcake(cupcake_id):
     estado = "voltou para a vitrine" if cupcake.ativo else "saiu da vitrine"
     flash(f"{cupcake.nome} {estado}.", "sucesso")
     return redirect(url_for("admin.cupcakes"))
+
+
+@admin_bp.get("/relatorio")
+@admin_obrigatorio
+def relatorio():
+    return render_template("admin/relatorio.html", resumo=resumo_vendas(Pedido.query.all()))
 
 
 @admin_bp.get("/avaliacoes")

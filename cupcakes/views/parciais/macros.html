@@ -11,4 +11,6 @@
 </svg>
 {% endmacro %}
 
+{% macro arte(cor, foto=None, nome="") %}{% if foto %}<img class="cupcake-foto" src="{{ foto }}" alt="{{ nome }}" loading="lazy">{% else %}{{ cupcake_svg(cor) }}{% endif %}{% endmacro %}
+
 {% macro selo_status(codigo, rotulo) %}<span class="selo selo-{{ codigo }}">{{ rotulo }}</span>{% endmacro %}

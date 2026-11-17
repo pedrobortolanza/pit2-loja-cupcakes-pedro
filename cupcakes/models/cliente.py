@@ -7,6 +7,7 @@ from cupcakes.extensions import db
 from cupcakes.models.base import agora
 
 PADRAO_EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+PADRAO_TELEFONE = re.compile(r"^[0-9()+\- ]{8,20}$")
 TAMANHO_MINIMO_SENHA = 6
 
 
@@ -54,6 +55,20 @@ class Cliente(db.Model):
         if cliente is None or not cliente.verificar_senha(senha or ""):
             raise ErroNegocio("E-mail ou senha incorretos.")
         return cliente
+
+    def atualizar_dados(self, nome, telefone):
+        nome = (nome or "").strip()
+        telefone = (telefone or "").strip()
+        erros = []
+        if len(nome) < 3:
+            erros.append("Informe seu nome completo.")
+        if telefone and not PADRAO_TELEFONE.match(telefone):
+            erros.append("Informe um telefone válido, por exemplo (41) 99999-0000.")
+        if erros:
+            raise ErroNegocio(" ".join(erros))
+        self.nome = nome
+        self.telefone = telefone
+        db.session.commit()
 
     def definir_senha(self, senha):
         self.senha_hash = generate_password_hash(senha, method="pbkdf2:sha256:600000")

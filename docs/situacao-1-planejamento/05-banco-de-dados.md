@@ -42,6 +42,7 @@ erDiagram
     numeric preco
     int estoque
     varchar cor
+    varchar foto_url
     boolean destaque
     boolean ativo
     int categoria_id FK
@@ -68,6 +69,8 @@ erDiagram
     varchar bairro
     varchar cidade
     varchar observacao
+    date data_agendada
+    varchar faixa_horario
     numeric subtotal
     numeric taxa_entrega
     numeric total
@@ -152,6 +155,7 @@ Restrições implementadas no banco:
 | preco | numeric(8,2) | não | | Preço unitário em reais | > 0 |
 | estoque | integer | não | | Unidades disponíveis hoje | >= 0 |
 | cor | varchar(7) | não | | Cor da cobertura na ilustração | `#RRGGBB` |
+| foto_url | varchar(500) | sim | | Link da foto do cupcake; sem foto, a vitrine mostra a ilustração (laudo S02) | começa com `https://` |
 | destaque | boolean | não | | Mostra a etiqueta "Mais pedido" e aparece primeiro | true/false |
 | ativo | boolean | não | | Se está na vitrine | true/false |
 | categoria_id | integer | não | FK → categoria.id | Categoria do sabor | categoria existente |
@@ -184,6 +188,8 @@ Restrições implementadas no banco:
 | bairro | varchar(60) | sim | | Bairro | obrigatório se entrega |
 | cidade | varchar(60) | sim | | Cidade | obrigatório se entrega |
 | observacao | varchar(255) | não | | Recado do cliente | pode ser vazio |
+| data_agendada | date | sim | | Dia escolhido para a entrega ou retirada; vazio = "o quanto antes" (laudo B02) | de amanhã até 7 dias |
+| faixa_horario | varchar(20) | sim | | Horário escolhido junto com o dia (laudo B02) | 09h às 12h, 12h às 15h, 15h às 18h ou 18h às 21h |
 | subtotal | numeric(10,2) | não | | Soma dos itens | >= 0 |
 | taxa_entrega | numeric(10,2) | não | | Frete cobrado | 0,00 ou 7,00 |
 | total | numeric(10,2) | não | | subtotal + taxa | >= 0 |

@@ -1,6 +1,6 @@
 # Testes automatizados (Pytest)
 
-**Resultado da última execução:** 62 testes, 62 aprovados, 0 falhas.
+**Resultado da última execução:** 92 testes, 92 aprovados, 0 falhas.
 
 Como rodar:
 
@@ -12,10 +12,10 @@ Os testes usam um banco SQLite em memória criado do zero a cada teste, então n
 
 | Arquivo | Camada testada | Quantidade |
 |---|---|---|
-| `tests/test_modelos.py` | Models (validações de Cliente, Cupcake e AvaliacaoTeste) | 13 |
-| `tests/test_servicos.py` | Services (carrinho, frete, endereço, pagamento, pedido, cancelamento, status) | 26 |
-| `tests/test_rotas.py` | Controllers + Views (integração pelas rotas HTTP) | 17 |
-| `tests/test_config.py` | Configuração (senha do banco com caracteres especiais na DATABASE_URL) | 6 |
+| `tests/test_modelos.py` | Models (validações de Cliente, Cupcake e AvaliacaoTeste; Minha conta e foto do cupcake) | 20 |
+| `tests/test_servicos.py` | Services (carrinho, frete, endereço, pagamento, pedido, cancelamento, status, agendamento, previsão, relatório de vendas) | 39 |
+| `tests/test_rotas.py` | Controllers + Views (integração pelas rotas HTTP) | 24 |
+| `tests/test_config.py` | Configuração (senha do banco com caracteres especiais, POSTGRES_URL da integração Supabase-Vercel) | 9 |
 
 ## O que cada grupo garante
 
@@ -74,6 +74,20 @@ Os testes usam um banco SQLite em memória criado do zero a cada teste, então n
 | test_formulario_de_avaliacao_salva_resposta | HU20 |
 | test_post_sem_token_csrf_e_recusado | proteção CSRF |
 
+### Correções do laudo de qualidade
+| Teste | Item do laudo |
+|---|---|
+| test_finalizar_mostra_cep_automatico_e_agendamento | B01 CEP e B02 agendamento na tela |
+| test_agendamento_e_opcional / aceita_dia_e_horario_validos | B02 |
+| test_agendamento_recusa_dia_fora_do_prazo (5 casos) / exige_horario_da_lista | B02 só de amanhã até 7 dias, horários da lista |
+| test_datas_para_agendar_vao_de_amanha_ate_7_dias | B02 |
+| test_pedido_agendado_guarda_dia_e_horario / test_pedido_agendado_pela_tela | B02 |
+| test_previsao_de_chegada_depende_da_forma_de_entrega / test_pedido_sem_agendamento_mostra_previsao | S04 |
+| test_cliente_atualiza_nome_e_telefone / nao_salva_dados_invalidos (2 casos) | S01 |
+| test_minha_conta_edita_dados / test_minha_conta_exige_login | S01 |
+| test_cupcake_guarda_link_da_foto / recusa_link_de_foto_invalido (3 casos) / test_vitrine_mostra_foto_quando_cadastrada | S02 |
+| test_relatorio_soma_vendas_e_ignora_cancelados / test_relatorio_sem_vendas / test_relatorio_de_vendas_so_para_admin | S05 |
+
 ## Saída da execução
 
 ```
@@ -82,6 +96,9 @@ tests/test_config.py::test_url_do_banco_codifica_a_senha[postgresql://postgres.a
 tests/test_config.py::test_url_do_banco_codifica_a_senha[postgresql://postgres.abc:[minhasenha]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres-minhasenha] PASSED
 tests/test_config.py::test_url_do_banco_codifica_a_senha[postgres://postgres.abc:ja%40codificada@aws-0-sa-east-1.pooler.supabase.com:6543/postgres-ja%40codificada] PASSED
 tests/test_config.py::test_url_do_banco_codifica_a_senha[  postgresql://postgres.abc:espaco@aws-0-sa-east-1.pooler.supabase.com:6543/postgres\n-espaco] PASSED
+tests/test_config.py::test_url_da_integracao_perde_parametros_extras PASSED
+tests/test_config.py::test_senha_com_interrogacao_nao_e_confundida_com_parametros PASSED
+tests/test_config.py::test_postgres_url_da_integracao_tem_prioridade PASSED
 tests/test_config.py::test_url_sqlite_nao_muda PASSED
 tests/test_modelos.py::test_cadastro_guarda_senha_criptografada PASSED
 tests/test_modelos.py::test_cadastro_normaliza_email PASSED
@@ -96,6 +113,13 @@ tests/test_modelos.py::test_cupcake_preencher_converte_preco_com_virgula PASSED
 tests/test_modelos.py::test_cupcake_preencher_reune_todos_os_erros PASSED
 tests/test_modelos.py::test_avaliacao_registra_campos_obrigatorios PASSED
 tests/test_modelos.py::test_avaliacao_recusa_link_sem_http PASSED
+tests/test_modelos.py::test_cliente_atualiza_nome_e_telefone PASSED
+tests/test_modelos.py::test_cliente_nao_salva_dados_invalidos[Ma--nome] PASSED
+tests/test_modelos.py::test_cliente_nao_salva_dados_invalidos[Maria Souza-abc-telefone] PASSED
+tests/test_modelos.py::test_cupcake_guarda_link_da_foto PASSED
+tests/test_modelos.py::test_cupcake_recusa_link_de_foto_invalido[http://exemplo.test/a.jpg] PASSED
+tests/test_modelos.py::test_cupcake_recusa_link_de_foto_invalido[javascript:alert(1)] PASSED
+tests/test_modelos.py::test_cupcake_recusa_link_de_foto_invalido[https://exemplo.test/a b.jpg] PASSED
 tests/test_rotas.py::test_vitrine_lista_cupcakes_ativos PASSED
 tests/test_rotas.py::test_vitrine_busca_por_nome PASSED
 tests/test_rotas.py::test_detalhe_de_cupcake_inexistente_mostra_404 PASSED
@@ -113,6 +137,13 @@ tests/test_rotas.py::test_admin_cadastra_cupcake PASSED
 tests/test_rotas.py::test_admin_cadastro_invalido_mostra_erros PASSED
 tests/test_rotas.py::test_formulario_de_avaliacao_salva_resposta PASSED
 tests/test_rotas.py::test_post_sem_token_csrf_e_recusado PASSED
+tests/test_rotas.py::test_finalizar_mostra_cep_automatico_e_agendamento PASSED
+tests/test_rotas.py::test_pedido_agendado_pela_tela PASSED
+tests/test_rotas.py::test_pedido_sem_agendamento_mostra_previsao PASSED
+tests/test_rotas.py::test_minha_conta_edita_dados PASSED
+tests/test_rotas.py::test_minha_conta_exige_login PASSED
+tests/test_rotas.py::test_relatorio_de_vendas_so_para_admin PASSED
+tests/test_rotas.py::test_vitrine_mostra_foto_quando_cadastrada PASSED
 tests/test_servicos.py::test_carrinho_soma_quantidades_do_mesmo_sabor PASSED
 tests/test_servicos.py::test_carrinho_nao_passa_do_estoque PASSED
 tests/test_servicos.py::test_carrinho_respeita_limite_por_item PASSED
@@ -139,5 +170,18 @@ tests/test_servicos.py::test_cliente_cancela_pedido_recebido_e_estoque_volta PAS
 tests/test_servicos.py::test_cliente_nao_cancela_pedido_em_preparo PASSED
 tests/test_servicos.py::test_fluxo_de_status_da_entrega PASSED
 tests/test_servicos.py::test_fluxo_de_status_da_retirada PASSED
-============================== 62 passed in 5.60s ==============================
+tests/test_servicos.py::test_agendamento_e_opcional PASSED
+tests/test_servicos.py::test_agendamento_aceita_dia_e_horario_validos PASSED
+tests/test_servicos.py::test_agendamento_recusa_dia_fora_do_prazo[2026-11-18] PASSED
+tests/test_servicos.py::test_agendamento_recusa_dia_fora_do_prazo[2026-11-26] PASSED
+tests/test_servicos.py::test_agendamento_recusa_dia_fora_do_prazo[2026-11-17] PASSED
+tests/test_servicos.py::test_agendamento_recusa_dia_fora_do_prazo[amanha] PASSED
+tests/test_servicos.py::test_agendamento_recusa_dia_fora_do_prazo[] PASSED
+tests/test_servicos.py::test_agendamento_exige_horario_da_lista PASSED
+tests/test_servicos.py::test_datas_para_agendar_vao_de_amanha_ate_7_dias PASSED
+tests/test_servicos.py::test_pedido_agendado_guarda_dia_e_horario PASSED
+tests/test_servicos.py::test_previsao_de_chegada_depende_da_forma_de_entrega PASSED
+tests/test_servicos.py::test_relatorio_soma_vendas_e_ignora_cancelados PASSED
+tests/test_servicos.py::test_relatorio_sem_vendas PASSED
+============================= 92 passed in 22.51s =============================
 ```

@@ -14,7 +14,7 @@ Sistema web para uma loja de cupcakes gourmet: vitrine virtual, carrinho, pedido
 | Front-end | HTML, CSS e JavaScript |
 | Banco de dados | PostgreSQL (Supabase) |
 | Hospedagem | Vercel |
-| Testes | Pytest (62 testes) |
+| Testes | Pytest (92 testes) |
 | Modo de codificação | Tradicional |
 
 ## Documentação

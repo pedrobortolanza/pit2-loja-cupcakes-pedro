@@ -2,6 +2,7 @@ from cupcakes import create_app
 from cupcakes.config import ConfigTeste
 from cupcakes.extensions import db as banco
 from cupcakes.models import AvaliacaoTeste, Cliente, Pedido
+from cupcakes.services.pedidos import datas_para_agendar
 from tests.conftest import CARTAO_TESTE, ENDERECO, fazer_login
 
 
@@ -155,3 +156,67 @@ def test_post_sem_token_csrf_e_recusado():
         assert resposta.status_code == 400
         assert "Requisição inválida" in texto(resposta)
         banco.drop_all()
+
+
+# Correções do laudo de qualidade
+
+def test_finalizar_mostra_cep_automatico_e_agendamento(cliente_http, conta, cupcake):
+    fazer_login(cliente_http, "maria@exemplo.test", "segredo123")
+    cliente_http.post(f"/carrinho/adicionar/{cupcake.id}", data={"quantidade": 1})
+    pagina = texto(cliente_http.get("/pedidos/finalizar"))
+    assert "preenchemos rua, bairro e cidade" in pagina
+    assert "Agendar dia e horário" in pagina
+    assert "15h às 18h" in pagina
+
+
+def test_pedido_agendado_pela_tela(cliente_http, conta, cupcake):
+    dia = datas_para_agendar()[1]
+    fazer_login(cliente_http, "maria@exemplo.test", "segredo123")
+    cliente_http.post(f"/carrinho/adicionar/{cupcake.id}", data={"quantidade": 1})
+    resposta = cliente_http.post("/pedidos/finalizar", data={"forma_entrega": "retirada", "forma_pagamento": "pix",
+                                                             "quando": "agendado", "data_agendada": dia.isoformat(),
+                                                             "faixa_horario": "15h às 18h"}, follow_redirects=True)
+    assert "Agendado para" in texto(resposta)
+    assert "15h às 18h" in texto(resposta)
+
+
+def test_pedido_sem_agendamento_mostra_previsao(cliente_http, conta, cupcake):
+    fazer_login(cliente_http, "maria@exemplo.test", "segredo123")
+    cliente_http.post(f"/carrinho/adicionar/{cupcake.id}", data={"quantidade": 1})
+    resposta = cliente_http.post("/pedidos/finalizar", data={"forma_entrega": "retirada", "forma_pagamento": "pix",
+                                                             "quando": "agora"}, follow_redirects=True)
+    assert "Previsão: pronto para retirar até" in texto(resposta)
+
+
+def test_minha_conta_edita_dados(cliente_http, conta):
+    fazer_login(cliente_http, "maria@exemplo.test", "segredo123")
+    assert "Minha conta" in texto(cliente_http.get("/"))
+    resposta = cliente_http.post("/conta/", data={"nome": "Maria Souza Lima", "telefone": "(41) 98888-7777"},
+                                 follow_redirects=True)
+    assert "Seus dados foram atualizados" in texto(resposta)
+    assert Cliente.query.one().telefone == "(41) 98888-7777"
+
+
+def test_minha_conta_exige_login(cliente_http):
+    resposta = cliente_http.get("/conta/")
+    assert resposta.status_code == 302
+    assert "/entrar" in resposta.headers["Location"]
+
+
+def test_relatorio_de_vendas_so_para_admin(cliente_http, conta, conta_admin, cupcake):
+    fazer_login(cliente_http, "maria@exemplo.test", "segredo123")
+    cliente_http.post(f"/carrinho/adicionar/{cupcake.id}", data={"quantidade": 2})
+    cliente_http.post("/pedidos/finalizar", data={"forma_entrega": "retirada", "forma_pagamento": "pix"})
+    assert cliente_http.get("/admin/relatorio").status_code == 403
+    cliente_http.post("/sair")
+    fazer_login(cliente_http, "admin@exemplo.test", "admin12345")
+    pagina = texto(cliente_http.get("/admin/relatorio"))
+    assert "Vendas de hoje" in pagina
+    assert "R$ 20,00" in pagina
+    assert "Chocolate" in pagina
+
+
+def test_vitrine_mostra_foto_quando_cadastrada(cliente_http, cupcake, db):
+    cupcake.foto_url = "https://exemplo.test/chocolate.jpg"
+    db.session.commit()
+    assert 'src="https://exemplo.test/chocolate.jpg"' in texto(cliente_http.get("/"))

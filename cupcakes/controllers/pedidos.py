@@ -6,7 +6,8 @@ from cupcakes.extensions import db
 from cupcakes.models import Pedido
 from cupcakes.models.pedido import FORMAS_PAGAMENTO
 from cupcakes.seguranca import login_obrigatorio, usuario_atual
-from cupcakes.services.pedidos import calcular_taxa_entrega, cancelar_pedido, criar_pedido
+from cupcakes.services.pedidos import (FAIXAS_HORARIO, calcular_taxa_entrega, cancelar_pedido, criar_pedido,
+                                       datas_para_agendar)
 
 pedidos_bp = Blueprint("pedidos", __name__, url_prefix="/pedidos")
 
@@ -30,7 +31,9 @@ def finalizar():
     subtotal = sum((item["subtotal"] for item in itens), 0)
     config = current_app.config
     taxa = calcular_taxa_entrega(subtotal, "entrega", config["TAXA_ENTREGA"], config["FRETE_GRATIS_A_PARTIR"])
-    contexto = {"itens": itens, "subtotal": subtotal, "taxa": taxa, "formas_pagamento": FORMAS_PAGAMENTO}
+    contexto = {"itens": itens, "subtotal": subtotal, "taxa": taxa, "formas_pagamento": FORMAS_PAGAMENTO,
+                "datas_agendamento": datas_para_agendar(), "faixas_horario": FAIXAS_HORARIO,
+                "prazo_entrega": config["PRAZO_ENTREGA_MINUTOS"], "prazo_retirada": config["PRAZO_RETIRADA_MINUTOS"]}
     if request.method == "POST":
         dados_cartao = {
             "titular": request.form.get("titular"),
@@ -41,15 +44,15 @@ def finalizar():
         try:
             pedido = criar_pedido(usuario_atual(), carrinho, request.form.get("forma_entrega"), request.form,
                                   request.form.get("forma_pagamento"), dados_cartao, request.form.get("observacao"),
-                                  config)
+                                  config, dados_agendamento=request.form)
         except ErroNegocio as erro:
             flash(erro.mensagem, "erro")
             return render_template("pedidos/finalizar.html", dados=request.form, **contexto), 422
         salvar_carrinho(carrinho)
         flash(f"Pedido #{pedido.id} confirmado! Acompanhe o status por aqui.", "sucesso")
         return redirect(url_for("pedidos.detalhe", pedido_id=pedido.id))
-    return render_template("pedidos/finalizar.html", dados={"forma_entrega": "entrega", "forma_pagamento": "pix"},
-                           **contexto)
+    return render_template("pedidos/finalizar.html",
+                           dados={"forma_entrega": "entrega", "forma_pagamento": "pix", "quando": "agora"}, **contexto)
 
 
 @pedidos_bp.get("/")
@@ -61,7 +64,10 @@ def lista():
 @pedidos_bp.get("/<int:pedido_id>")
 @login_obrigatorio
 def detalhe(pedido_id):
-    return render_template("pedidos/detalhe.html", pedido=_pedido_do_cliente(pedido_id))
+    pedido = _pedido_do_cliente(pedido_id)
+    config = current_app.config
+    previsao = pedido.previsao(config["PRAZO_ENTREGA_MINUTOS"], config["PRAZO_RETIRADA_MINUTOS"])
+    return render_template("pedidos/detalhe.html", pedido=pedido, previsao=previsao)
 
 
 @pedidos_bp.post("/<int:pedido_id>/cancelar")

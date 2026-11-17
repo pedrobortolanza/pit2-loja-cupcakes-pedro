@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "parciais/macros.html" import csrf, cupcake_svg with context %}
+{% from "parciais/macros.html" import csrf, cupcake_svg, arte with context %}
 {% set aba = 'cupcakes' %}
 {% block titulo %}Painel · Cupcakes{% endblock %}
 {% block conteudo %}
@@ -12,7 +12,7 @@
   <tbody>
     {% for cupcake in cupcakes %}
     <tr class="{% if not cupcake.ativo %}linha-inativa{% endif %}">
-      <td><span class="miniatura" style="--fundo: {{ cupcake.cor }}">{{ cupcake_svg(cupcake.cor) }}</span></td>
+      <td><span class="miniatura" style="--fundo: {{ cupcake.cor }}">{{ arte(cupcake.cor, cupcake.foto_url, cupcake.nome) }}</span></td>
       <td>{{ cupcake.nome }}{% if cupcake.destaque %} <span class="etiqueta etiqueta-inline">Destaque</span>{% endif %}</td>
       <td>{{ cupcake.categoria.nome }}</td>
       <td class="sem-quebra">{{ cupcake.preco|moeda }}</td>

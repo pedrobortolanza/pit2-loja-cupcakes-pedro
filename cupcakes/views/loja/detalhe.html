@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% from "parciais/macros.html" import csrf, cupcake_svg with context %}
+{% from "parciais/macros.html" import csrf, cupcake_svg, arte with context %}
 {% block titulo %}{{ cupcake.nome }}{% endblock %}
 {% block conteudo %}
 <nav class="trilha" aria-label="Você está em"><a href="{{ url_for('loja.vitrine') }}">Vitrine</a> › <a href="{{ url_for('loja.vitrine', categoria=cupcake.categoria_id) }}">{{ cupcake.categoria.nome }}</a> › <span>{{ cupcake.nome }}</span></nav>
 <article class="produto">
-  <div class="produto-imagem" style="--fundo: {{ cupcake.cor }}">{{ cupcake_svg(cupcake.cor) }}</div>
+  <div class="produto-imagem" style="--fundo: {{ cupcake.cor }}">{{ arte(cupcake.cor, cupcake.foto_url, cupcake.nome) }}</div>
   <div class="produto-info">
     <p class="cartao-categoria">{{ cupcake.categoria.nome }}</p>
     <h1>{{ cupcake.nome }}</h1>
@@ -33,7 +33,7 @@
   <ul class="grade grade-pequena">
     {% for outro in relacionados %}
       <li class="cartao">
-        <a class="cartao-imagem" href="{{ url_for('loja.detalhe', cupcake_id=outro.id) }}" style="--fundo: {{ outro.cor }}">{{ cupcake_svg(outro.cor) }}</a>
+        <a class="cartao-imagem" href="{{ url_for('loja.detalhe', cupcake_id=outro.id) }}" style="--fundo: {{ outro.cor }}">{{ arte(outro.cor, outro.foto_url, outro.nome) }}</a>
         <div class="cartao-corpo">
           <h3><a href="{{ url_for('loja.detalhe', cupcake_id=outro.id) }}">{{ outro.nome }}</a></h3>
           <strong class="preco">{{ outro.preco|moeda }}</strong>

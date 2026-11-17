@@ -1,7 +1,6 @@
 import os
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
-from zoneinfo import ZoneInfo
 
 from flask import Flask, render_template
 
@@ -9,10 +8,11 @@ from cupcakes.config import Config
 from cupcakes.controllers import BLUEPRINTS
 from cupcakes.controllers.util import obter_carrinho
 from cupcakes.extensions import db
+from cupcakes.models.base import FUSO, como_utc
 from cupcakes.seguranca import token_csrf, usuario_atual, verificar_csrf
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FUSO = ZoneInfo("America/Sao_Paulo")
+DIAS_DA_SEMANA = ["seg", "ter", "qua", "qui", "sex", "sáb", "dom"]
 
 ERROS = {
     400: ("Requisição inválida", "O formulário expirou ou veio incompleto. Volte, recarregue a página e tente de novo."),
@@ -31,10 +31,21 @@ def data_hora(valor):
     if valor is None:
         return ""
     if isinstance(valor, datetime):
-        if valor.tzinfo is None:
-            valor = valor.replace(tzinfo=timezone.utc)
-        return valor.astimezone(FUSO).strftime("%d/%m/%Y %H:%M")
+        return como_utc(valor).astimezone(FUSO).strftime("%d/%m/%Y %H:%M")
     return valor.strftime("%d/%m/%Y")
+
+
+def data_curta(valor):
+    """Data com o dia da semana, por exemplo: sex, 20/11."""
+    if valor is None:
+        return ""
+    return f"{DIAS_DA_SEMANA[valor.weekday()]}, {valor.strftime('%d/%m')}"
+
+
+def hora(valor):
+    if valor is None:
+        return ""
+    return como_utc(valor).astimezone(FUSO).strftime("%H:%M")
 
 
 def create_app(configuracao=Config):
@@ -51,6 +62,8 @@ def create_app(configuracao=Config):
     app.before_request(verificar_csrf)
     app.add_template_filter(moeda, "moeda")
     app.add_template_filter(data_hora, "data_hora")
+    app.add_template_filter(data_curta, "data_curta")
+    app.add_template_filter(hora, "hora")
 
     @app.context_processor
     def contexto_global():

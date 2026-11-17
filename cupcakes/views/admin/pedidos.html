@@ -26,7 +26,8 @@
       <td>{{ pedido.cliente.nome }}</td>
       <td class="sem-quebra">{{ pedido.criado_em|data_hora }}</td>
       <td>{% for item in pedido.itens %}{{ item.quantidade }}× {{ item.nome_cupcake }}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
-      <td>{{ pedido.forma_entrega_rotulo }}{% if pedido.forma_entrega == 'entrega' %}<br><small>{{ pedido.bairro }}, {{ pedido.cidade }}</small>{% endif %}</td>
+      <td>{{ pedido.forma_entrega_rotulo }}{% if pedido.forma_entrega == 'entrega' %}<br><small>{{ pedido.bairro }}, {{ pedido.cidade }}</small>{% endif %}
+        {% if pedido.agendado %}<br><small class="agendado">Agendado: {{ pedido.data_agendada|data_curta }}, {{ pedido.faixa_horario }}</small>{% endif %}</td>
       <td>{% if pedido.pagamento %}{{ pedido.pagamento.forma_rotulo }}<br><small>{{ pedido.pagamento.status_rotulo }}</small>{% endif %}</td>
       <td class="sem-quebra">{{ pedido.total|moeda }}</td>
       <td>{{ selo_status(pedido.status, pedido.status_rotulo) }}</td>

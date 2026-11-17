@@ -65,6 +65,8 @@ class Config:
     TAXA_ENTREGA = Decimal("7.00")
     FRETE_GRATIS_A_PARTIR = Decimal("80.00")
     LIMITE_POR_ITEM = 20
+    PRAZO_ENTREGA_MINUTOS = 60
+    PRAZO_RETIRADA_MINUTOS = 30
 
 
 class ConfigTeste(Config):

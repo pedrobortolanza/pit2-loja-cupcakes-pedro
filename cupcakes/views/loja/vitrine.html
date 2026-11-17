@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "parciais/macros.html" import csrf, cupcake_svg with context %}
+{% from "parciais/macros.html" import csrf, cupcake_svg, arte with context %}
 {% block titulo %}Vitrine{% endblock %}
 {% block conteudo %}
 <section class="destaque-topo">
@@ -32,7 +32,7 @@
     {% for cupcake in cupcakes %}
       <li class="cartao {% if not cupcake.disponivel %}cartao-esgotado{% endif %}">
         <a class="cartao-imagem" href="{{ url_for('loja.detalhe', cupcake_id=cupcake.id) }}" style="--fundo: {{ cupcake.cor }}">
-          {{ cupcake_svg(cupcake.cor) }}
+          {{ arte(cupcake.cor, cupcake.foto_url, cupcake.nome) }}
           {% if cupcake.destaque %}<span class="etiqueta">Mais pedido</span>{% endif %}
           {% if not cupcake.disponivel %}<span class="etiqueta etiqueta-cinza">Esgotado</span>{% endif %}
         </a>

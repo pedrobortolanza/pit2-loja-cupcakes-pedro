@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% set aba = 'relatorio' %}
+{% block titulo %}Painel · Relatório de vendas{% endblock %}
+{% block conteudo %}
+<h1>Painel da loja</h1>
+{% include "admin/_abas.html" %}
+<p class="texto-suave">Valores de pedidos não cancelados. Hoje é {{ resumo.hoje|data_curta }}.</p>
+
+<div class="indicadores">
+  <div class="painel indicador"><span>Vendas de hoje</span><strong>{{ resumo.vendas_hoje|moeda }}</strong><small>{{ resumo.pedidos_hoje }} pedido(s)</small></div>
+  <div class="painel indicador"><span>Ticket médio de hoje</span><strong>{{ resumo.ticket_medio_hoje|moeda }}</strong><small>valor médio por pedido</small></div>
+  <div class="painel indicador"><span>Últimos 7 dias</span><strong>{{ resumo.vendas_semana|moeda }}</strong><small>{{ resumo.pedidos_semana }} pedido(s)</small></div>
+  <div class="painel indicador"><span>Pedidos em aberto</span><strong>{{ resumo.em_aberto }}</strong><small>{{ resumo.cancelados }} cancelado(s) no total</small></div>
+</div>
+
+<h2>Sabores mais vendidos</h2>
+{% if resumo.mais_vendidos %}
+<div class="tabela-rolagem">
+<table class="tabela">
+  <thead><tr><th>Posição</th><th>Sabor</th><th>Unidades vendidas</th><th>Receita</th></tr></thead>
+  <tbody>
+    {% for sabor in resumo.mais_vendidos %}
+    <tr><td>{{ loop.index }}º</td><td>{{ sabor.nome }}</td><td>{{ sabor.quantidade }}</td><td class="sem-quebra">{{ sabor.receita|moeda }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="vazio"><p>Ainda não há vendas para mostrar.</p></div>
+{% endif %}
+{% endblock %}

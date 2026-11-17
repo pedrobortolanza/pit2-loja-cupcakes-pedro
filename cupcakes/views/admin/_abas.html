@@ -1,5 +1,6 @@
 <nav class="abas" aria-label="Painel administrativo">
   <a href="{{ url_for('admin.pedidos') }}" {% if aba == 'pedidos' %}aria-current="page"{% endif %}>Pedidos</a>
   <a href="{{ url_for('admin.cupcakes') }}" {% if aba == 'cupcakes' %}aria-current="page"{% endif %}>Cupcakes</a>
+  <a href="{{ url_for('admin.relatorio') }}" {% if aba == 'relatorio' %}aria-current="page"{% endif %}>Relatório de vendas</a>
   <a href="{{ url_for('admin.avaliacoes') }}" {% if aba == 'avaliacoes' %}aria-current="page"{% endif %}>Avaliações de teste</a>
 </nav>
