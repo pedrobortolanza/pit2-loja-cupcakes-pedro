@@ -6,7 +6,8 @@ Sistema web para uma loja de cupcakes gourmet: vitrine virtual, carrinho, pedido
 
 - **Antes de tudo, leia [COMO-CONTINUAR.md](COMO-CONTINUAR.md).**
 - **Sistema no ar:** https://pit2-loja-cupcakes.vercel.app
-- **Vídeo de demonstração:** (adicionar o link do YouTube depois de gravar)
+- **Vídeo de apresentação:** https://youtu.be/AomlQVfado4
+- **Vídeo das correções:** https://youtu.be/j8gUliYhFuA
 
 | | |
 |---|---|
